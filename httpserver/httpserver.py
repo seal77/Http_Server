@@ -6,6 +6,8 @@ httpserver v3.0
 从WebFrame接收反馈数据
 将数据组织为Response格式发送给客户端
 """
+import re
+import json
 from socket import *
 import sys
 from threading import Thread
@@ -38,7 +40,30 @@ class HttpServer:
 
     def handle(self, connfd):
         request = connfd.recv(4096).decode()
-        print(request)
+        connfd.send(b"OK")
+        pattern = r"(?P<method>[A-Z]+)\s+(?P<info>/\S*)"
+        try:
+            env = re.match(pattern, request).groupdict()
+        except Exception as e:
+            print(e)
+            connfd.close()
+            return
+        # print(env)
+        response = connect_frame(env)
+        print(response)
+
+def connect_frame(env):
+    s = socket()
+    address = (frame_ip, frame_port)
+    try:
+        s.connect(address)
+    except:
+        return
+    data = json.dumps(env)
+    s.send(data.encode())
+    data = s.recv(1024*1024*10).decode()
+    return json.loads(data)
+
 
 if __name__ == '__main__':
     httpserver = HttpServer()
