@@ -50,7 +50,25 @@ class HttpServer:
             return
         # print(env)
         response = connect_frame(env)
-        print(response)
+        # print(response)
+        if response:
+            self.send_response(response, connfd)
+
+    def send_response(self, response, connfd):
+        data = ""
+        if response["status"] == "200":
+            data = "HTTP/1.1 200 OK\r\n"
+            data += "Content-Type:text/html\r\n"
+            data += "\r\n"
+            data += response["data"]
+        elif response["status"] == "404":
+            data = "HTTP/1.1 404 Not Found\r\n"
+            data += "Content-Type:text/html\r\n"
+            data += "\r\n"
+            data += response["data"]
+        elif response["status"] == "500":
+            pass
+        connfd.send(data.encode())
 
 def connect_frame(env):
     s = socket()
