@@ -45,12 +45,14 @@ class Application:
         request = json.loads(request)
         # print(data_dict)
         if request["method"] == "GET":
-            if request["info"] == "/" or request["info"][-5:] == ".html":
+            if request["info"] == "/":
                 code, data = self.get_resource_data(STATIC_DIR + "/index.html")
                 request = {"status": code, "data": data}
-            else:
+            elif request["info"][-5:] == ".html":
                 code, data = self.get_resource_data(STATIC_DIR + request["info"])
                 request = {"status": code, "data": data}
+            else:
+                pass
             connfd.send(json.dumps(request).encode())
             connfd.close()
 
@@ -68,6 +70,9 @@ class Application:
             data = file.read()
             file.close()
             return "404", data.decode()
+
+    def get_data(self, info):
+        pass
 
 
 if __name__ == '__main__':
