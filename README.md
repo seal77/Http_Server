@@ -1,4 +1,4 @@
-###后台运行
+### 后台运行
     添加解释器路径
     #!/usr/bin/env python3
     改变权限 (rwxrw-rw-)
