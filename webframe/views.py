@@ -2,6 +2,7 @@
 编写各种请求的处理方案
 """
 import time
+import re
 
 def show_time():
     return time.ctime()

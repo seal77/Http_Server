@@ -12,3 +12,37 @@
     运行
     >> webframe &
     [1] pid
+## 阶段总结
+    数据结构
+        * 逻辑结构
+        * 存储结构
+        * 链表，栈，队列
+        * 树 遍历方法和递归思想（扩展）
+        * 算法：排序，查找
+    
+    IO
+        * （open read write）文件描述符fd
+        * 网络 socket（TCP，UDP） 
+            TCP/IP协议 HTTP协议
+        * fork Process threading （通信，并发）
+        * IO多路复用
+        * 协程
+    
+    RE
+        * findall
+        * match
+    
+    MySQL
+        * CURD
+        * pymysql
+            connect(commit)->cursor(execute, fatchall)
+    
+    Git
+        * 
+        * 
+        * 
+    
+    Project
+        * ftp
+        * dict
+        * httpserver
