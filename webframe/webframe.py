@@ -8,6 +8,7 @@ webframe
 """
 
 from socket import *
+from day9_19.webframe.urls import *
 import json
 from day9_19.webframe.settings import *
 from threading import Thread
@@ -52,7 +53,16 @@ class Application:
                 code, data = self.get_resource_data(STATIC_DIR + request["info"])
                 request = {"status": code, "data": data}
             else:
-                pass
+                for u in urls:
+                    if u[0] == request["info"]:
+                        data = u[1]()
+                        code = "200"
+                        request = {"status": code, "data": data}
+                        connfd.send(json.dumps(request).encode())
+                        connfd.close()
+                        return
+                code = "200"
+                data = "404"
             connfd.send(json.dumps(request).encode())
             connfd.close()
 
