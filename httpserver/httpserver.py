@@ -45,7 +45,7 @@ class HttpServer:
         try:
             env = re.match(pattern, request).groupdict()
         except Exception as e:
-            print(e)
+            # print(e)
             connfd.close()
             return
         # print(env)

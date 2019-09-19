@@ -34,6 +34,7 @@ class Application:
         while True:
             connfd, addr = self.socketfd.accept()
             client = Process(target=self.handle, args={connfd,})
+            client.daemon = True
             client.start()
 
     def handle(self, connfd):
@@ -41,16 +42,20 @@ class Application:
         if not request:
             connfd.close()
             return
-        data_dict = json.loads(request)
-        print(data_dict)
-        info = data_dict["info"]
-        if info == "/":
-            code, data = self.get_resource_data("static/index.html")
-            data_dict = {"status":code, "data": data}
-        else:
-            code, data = self.get_resource_data("static" + info)
-            data_dict = {"status": code, "data": data}
-        connfd.send(json.dumps(data_dict).encode())
+        request = json.loads(request)
+        # print(data_dict)
+        if request["method"] == "GET":
+            if request["info"] == "/" or request["info"][-5:] == ".html":
+                code, data = self.get_resource_data(STATIC_DIR + "/index.html")
+                request = {"status": code, "data": data}
+            else:
+                code, data = self.get_resource_data(STATIC_DIR + request["info"])
+                request = {"status": code, "data": data}
+            connfd.send(json.dumps(request).encode())
+            connfd.close()
+
+        elif request["method"] == "POST":
+            pass
 
     def get_resource_data(self, file_url):
         try:
@@ -59,7 +64,7 @@ class Application:
             file.close()
             return "200", data.decode()
         except:
-            file = open("static/404.html", "rb")
+            file = open(STATIC_DIR + "/404.html", "rb")
             data = file.read()
             file.close()
             return "404", data.decode()
