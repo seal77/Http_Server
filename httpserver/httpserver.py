@@ -40,7 +40,7 @@ class HttpServer:
 
     def handle(self, connfd):
         request = connfd.recv(4096).decode()
-        connfd.send(b"OK")
+        # connfd.send(b"OK")
         pattern = r"(?P<method>[A-Z]+)\s+(?P<info>/\S*)"
         try:
             env = re.match(pattern, request).groupdict()
@@ -56,6 +56,8 @@ class HttpServer:
 
     def send_response(self, response, connfd):
         data = ""
+        if not response:
+            return
         if response["status"] == "200":
             data = "HTTP/1.1 200 OK\r\n"
             data += "Content-Type:text/html\r\n"

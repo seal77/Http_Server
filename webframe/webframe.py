@@ -15,10 +15,56 @@ from multiprocessing import Process
 
 class Application:
     def __init__(self):
-        pass
+        self.host = host
+        self.port = port
+        self.address = (self.host, self.port)
+        self.create_socket()
+        self.bind()
+
+    def create_socket(self):
+        self.socketfd = socket()
+        self.socketfd.setsockopt(SOL_SOCKET, SO_REUSEADDR, DEBUG)
+
+    def bind(self):
+        self.socketfd.bind(self.address)
 
     def start(self):
-        pass
+        self.socketfd.listen(5)
+        print("application start at port %d"%self.port)
+        while True:
+            connfd, addr = self.socketfd.accept()
+            client = Process(target=self.handle, args={connfd,})
+            client.start()
+
+    def handle(self, connfd):
+        request = connfd.recv(1024).decode()
+        if not request:
+            connfd.close()
+            return
+        data_dict = json.loads(request)
+        print(data_dict)
+        info = data_dict["info"]
+        if info == "/":
+            code, data = self.get_resource_data("static/index.html")
+            data_dict = {"status":code, "data": data}
+        else:
+            code, data = self.get_resource_data("static" + info)
+            data_dict = {"status": code, "data": data}
+        connfd.send(json.dumps(data_dict).encode())
+
+    def get_resource_data(self, file_url):
+        try:
+            file = open(file_url, "rb")
+            data = file.read()
+            file.close()
+            return "200", data.decode()
+        except:
+            file = open("static/404.html", "rb")
+            data = file.read()
+            file.close()
+            return "404", data.decode()
+
 
 if __name__ == '__main__':
-    pass
+    app = Application()
+    app.start()
